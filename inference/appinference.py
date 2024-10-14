@@ -91,8 +91,11 @@ def make_prediction(img_path, threshold=0.5):
     food_labels = ['nasi_lemak', 'roti_canai']  # Ensure correct order
     predicted_label = food_labels[predicted_label_idx]
 
+    # Format the label to a more readable form (e.g., 'Roti Canai', 'Nasi Lemak')
+    predicted_label = predicted_label.replace('_', ' ').title()
+
     # Step 5: Retrieve nutrition information based on prediction
-    nutrition_info = nutrition_data.get(predicted_label, "Unknown food")
+    nutrition_info = nutrition_data.get(predicted_label.lower().replace(' ', '_'), "Unknown food")
     if portion_size:
         adjusted_nutrition = {
             'calories': nutrition_info['calories'] * portion_size,
