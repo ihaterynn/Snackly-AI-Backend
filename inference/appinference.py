@@ -6,7 +6,6 @@ from models.mobilenet import load_mobilenetv2
 from models.mobilevit import MobileViT
 from models.mask_rcnn import load_mask_rcnn
 import os
-import base64
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -127,23 +126,20 @@ def index():
     </html>
     '''
 
-# Define the inference route
+# Define the inference route for handling 'multipart/form-data'
 @app.route('/infer', methods=['POST'])
 def infer():
     try:
-        # Check if base64 image data is provided in the request
-        data = request.get_json()
-        if 'image' not in data:
+        # Check if an image was uploaded
+        if 'image' not in request.files:
             return jsonify({"error": "No image provided"}), 400
 
-        # Decode base64 image
-        image_data = data['image']
-        img_bytes = base64.b64decode(image_data)
+        # Get the uploaded image
+        img_file = request.files['image']
 
-        # Save the decoded image temporarily
+        # Save the uploaded image temporarily
         img_path = 'temp_image.jpg'
-        with open(img_path, 'wb') as img_file:
-            img_file.write(img_bytes)
+        img_file.save(img_path)
 
         # Make the prediction
         label, nutrition = make_prediction(img_path)
